@@ -18,7 +18,7 @@
         {% endfor %}
       </td>
     </tr>
-    {% if not event.flag_is_full %}
+    {% if event.flag_is_full and hide_on_full %}{% else %}
     {% if event.location %}
     <tr class="event">
       <th class="event">where</th>
