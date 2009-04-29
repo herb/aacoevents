@@ -11,7 +11,7 @@
         <h2>{{ group.grouper }} Events</h2>
         <ol class="event">
         {% for event in group.list %}
-        {% include "../shared/out_html_item.tmpl" %}
+          <li class="event">{% include "../shared/out_html_item.tmpl" %}</li>
         {% endfor %}
         </ol>
         {% endfor %}

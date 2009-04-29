@@ -103,7 +103,6 @@ class EventAddPage(base.BaseRequestHandler):
     db_log.log_action(db_log.ACTION_CREATE, users.get_current_user(),
         str(event.key))
 
-    self.display.update(preview)
     self.display['event'] = event
     self.display['EVENT_TYPES'] = db_event.EVENT_TYPES
 
@@ -182,7 +181,8 @@ class EventOutPage(base.BaseRequestHandler):
       self.generate("events/index.tmpl", {})
       return
 
-    events = db_event.get_publishable_events(self.request.get_all('key'))
+    events = sorted(db_event.get_publishable_events(self.request.get_all('key')),
+        cmp=_cmp_events)
     tmpl_display = { 'events': events }
     out_html = base.render_tmpl('events/out_html_email.tmpl', tmpl_display)
     out_text = string.strip(base.render_tmpl('events/out_text_email.tmpl',
