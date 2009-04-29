@@ -1,0 +1,62 @@
+{% extends "base.tmpl" %}
+
+{% block title %}{{ application_name }}: Event Output Selection{% endblock %}
+
+{% block head %}
+  <style>
+    th {
+      text-align: left;
+      padding: 1px 5px 1px 5px;
+    }
+    td {
+      padding: 1px 5px 1px 5px;
+      vertical-align: top;
+    }
+  </style>
+{% endblock head %}
+
+{% block body %}
+  {% if events %}
+  <p><i>note: only showing events that begin 90 days in the future </i></p>
+  <form method="POST">
+    <table border="0">
+      <tr>
+        <td>&nbsp;</td>
+
+        <th>time</th>
+        <th>type</th>
+        <th>title</th>
+        <th>contact</th>
+      </tr>
+    {% for event in events %}
+      <tr>
+        <td>
+          <input type="checkbox" name="key" value="{{ event.key }}" CHECKED/>
+        </td>
+        <td style="width: 260px;">
+          {% for time in event.times %}
+          {{ time.start|date:"Y-m-d H:i" }} - {{ time.end|date:"Y-m-d H:i" }} <br/>
+          {% endfor %}
+        </td>
+        <td>{{ event.type_text }}</td>
+        <td>{{ event.title }}</td>
+        <td>{{ event.contact }}</td>
+      </tr>
+    {% endfor %}
+      <tr>
+        <td colspan="5">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="preview" value="1" CHECKED/></td>
+        <td colspan="4"> preview only</td>
+      <tr>
+        <td>&nbsp;</td>
+
+        <td colspan="4"><input type="submit" value="publish"/></td>
+      </tr>
+    </table>
+  </form>
+  {% else %}
+  no events
+  {% endif %}
+{% endblock body %}

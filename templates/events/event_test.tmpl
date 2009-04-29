@@ -1,0 +1,17 @@
+{% extends "base.tmpl" %}
+
+{% block title %}{{ application_name }}: Event Add Complete{% endblock %}
+
+{% block head %}
+<link type="text/css" href="static/css/jquery-ui.css" rel="stylesheet" />
+<script src="static/javascript/jquery.js" type="text/javascript"></script>
+<script src="static/javascript/jquery-ui.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block body %}
+{{ title }}<br/>
+begin: {{ starts }}<br/>
+end: {{ ends }}<br/>
+{{ description }}<br/>
+{{ location }}<br/>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% if event.flag_is_full %} <b class="event">( RSVP FULL )</b> {% endif %}<h3 class="event">{{ event.title }}</h3><div style="display: block;"></div>
+
+  <br/>
+  <table border="0">
+    <tr class="event">
+      <th class="event">when</th>
+      <td class="event">
+        {% for time in event.times %}
+        {% if time.is_same_day %}
+        {{ time.start|pretty_date }}&nbsp;&nbsp;&nbsp;
+        {{ time.start|pretty_time }} - {{  time.end|pretty_time }}
+        {% else %}
+        {{ time.start|pretty_datetime }} - {{  time.end|pretty_datetime }}
+        {% endif %}
+        {% if not forloop.last %}
+        <br/>
+        {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+    {% if not event.flag_is_full %}
+    {% if event.location %}
+    <tr class="event">
+      <th class="event">where</th>
+      <td class="event">{{ event.location|linebreaksbr }}</td>
+    </tr>
+    {% endif %}
+    {% if event.contact %}
+    <tr class="event">
+      <th class="event">contact</th>
+      <td class="event">{{ event.contact|urlize|linebreaksbr }}</td>
+    </tr>
+    {% endif %}
+
+    <tr class="event"><td class="event">&nbsp;</td><td class="event">&nbsp;</td></tr>
+
+    <tr class="event">
+      <td class="event">&nbsp;</td>
+      <td class="event">{{ event.description|linebreaksbr|urlizetrunc:30 }}</td>
+    </tr>
+    {% endif %}
+  </table>
+

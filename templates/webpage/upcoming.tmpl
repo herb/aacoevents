@@ -1,0 +1,239 @@
+{% extends "base.tmpl" %}
+
+{% block head %}
+  <script src="/static/javascript/jquery.corners.min.js" type="text/javascript">
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('li[class=event]').corners();
+      $('div[id=sidebar-nav-div]').corners();
+      $('div[id=sidebar-image-div]').corners();
+
+    });
+  </script>
+
+  <style>
+    body {
+      color: white;
+      background-color: black;
+    }
+
+    a:link {
+      color:#FFFF00;
+    }
+
+    a:visited {
+      color:#FF6600;
+    }
+
+    a:active {
+      color:#99CC00;
+    }
+
+    a:hover {
+      color:#111111;
+    }
+
+    #mast-div {
+      height: 120px;
+    }
+
+    #base-div {
+      position: relative;
+      width: 0960px;
+      padding: 0px 5px 5px 5px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #sidebar-div {
+      float: left;
+    }
+
+    #sidebar-nav-div {
+      width: 200px;
+      float: left;
+      margin-right: 0px;
+      margin-top: 10px;
+      text-align: center;
+      background-color: #444444;
+    }
+
+    #sidebar-image-div {
+      width: 200px;
+      float: left;
+      margin-right: 0px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #sidebar-image-div-sav {
+      width: 200px;
+      height: 116px;
+      float: left;
+      margin-right: 0px;
+      margin-top: 10px;
+      text-align: center;
+      vertical-align: middle;
+      background-color: #444444;
+    }
+
+    #sidebar-syndication-div {
+      width: 200px;
+      height: 25px;
+      float: left:
+      margin-right: 0px;
+      margin-top: 10px;
+      text-align: center;
+      background-color: #444444;
+    }
+
+    #sidebar-list {
+      margin-top: 10px;
+      padding: 0px;
+    }
+
+    #sidebar-item {
+      margin: 0px;
+      padding-top: 5px;
+      list-style: none;
+      
+    }
+
+    .sidebar-links {
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    #main-content-div {
+      width: 750px;
+      float: right;
+    }
+
+    #main-content-header-div {
+      text-align: center;
+    }
+
+    #main-content-footer-div {
+      width: 750px;
+      float: left;
+      padding-left: 20px;
+    }
+
+    #mast-image {
+      position: absolute;
+      left: 43px;
+    }
+
+    #mast-title {
+      display: inline;
+      position: absolute;
+      text-transform: lowercase;
+      font-size: 70px;
+      left: 250px;
+      -webkit-transition: color 0.25s linear;
+    }
+
+    tr.event {
+      vertical-align: top;
+    }
+
+    th.event {
+      width: 050px;
+      text-align: left;
+    }
+
+    td.event {
+      padding: 0px 20px 10px 20px;
+    }
+
+    ol.event {
+      list-style-type: none;
+      margin-top: 0px;
+      padding-left: 20px;
+    }
+
+    li.event {
+      margin-top: 10px;
+      border-radius: 1.6em;
+      padding: 10px;
+      background-color: #444444;
+    }
+
+    b.event {
+      font-weight: bold;
+      display: inline;
+      color: red;
+    }
+
+    h3.event {
+      display: inline;
+    }
+  </style>
+{% endblock head %}
+
+{% block main_content %}
+  <div id="mast-div">
+    <img id="mast-image" src="/static/images/logo_red_120.gif"/>
+    <h1 id="mast-title">Upcoming Events</h1>
+  </div>
+  <div id="sidebar-div">
+    <div id="sidebar-nav-div">
+      <ul id="sidebar-list">
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/">home</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/mission.htm">our mission</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/upcoming.html">upcoming events</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/past.shtml">past events</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/staff.htm">staff</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/feedback.htm">join us</a>
+        </li>
+        <li id="sidebar-item">
+          <a class="sidebar-links" href="/links.htm">links</a>
+        </li>
+      </ul>
+    </div>
+    <div style="clear: left;"></div>
+    <div id="sidebar-syndication-div">
+      <a style="position: relative; top: 06px;" href="http://www.google.com/calendar/ical/aacosf%40aaco-sf.org/public/basic.ics"><img src="/static/images/cal-ical.gif"/></a>
+      <a style="position: relative; top: 06px;" href="http://www.google.com/calendar/hosted/aaco-sf.org/embed?src=aacosf%40aaco-sf.org&ctz=America/Los_Angeles"><img src="/static/images/cal-html.gif"/></a>
+    </div>
+
+    <div style="clear: left;"></div>
+    <div id="sidebar-image-div">
+        <embed type="application/x-shockwave-flash" src="http://picasaweb.google.com/s/c/bin/slideshow.swf" width="144" height="96" flashvars="host=picasaweb.google.com&RGB=0x000000&feed=http%3A%2F%2Fpicasaweb.google.com%2Fdata%2Ffeed%2Fapi%2Fuser%2Fherbert.ho%2Falbumid%2F5175057527585806625%3Fkind%3Dphoto%26alt%3Drss%26authkey%3DGv1sRgCNGm6YXFu9fjtAE" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed>
+        <br/>
+        Feb 24th -- Street Meals
+    </div>
+  </div>
+  <div id="main-content-div">
+    <ol class="event">
+    {% for event in events %}
+      <li class="event">{% include "../shared/out_html_item.tmpl" %}</li>
+    {% endfor %}
+    </ol>
+    <div id="main-content-footer-div">
+      <h2>Disclaimer / Waiver</h2>
+      <p>AACO events are not professionally or formally guided. It is the
+      participants' responsibility to ensure they are in proper physical
+      condition for events they attend, and should consult their physician
+      if necessary.</p>
+      <p>By attending an event you agree that you do so at your own risk,
+      are voluntarily participating, assume all risk of injury to yourself,
+      and release and discharge AACO and its staff from any and all claims
+      or causes of action, known or unknown, arising out of AACO's
+      negligence.</p>
+    <div>
+  </div>
+{% endblock main_content %}

@@ -1,0 +1,24 @@
+*************************** AACO ***************************
+********** Asian Americans for Community Outreach **********
+********************* info@aaco-sf.org *********************
+********************* <www.aaco-sf.org> ********************
+*************************** AACO ***************************
+
+{% regroup events by type_text as grouped %}
+{% for group in grouped %}
+{% filter postpadding:60 %}{{ group.grouper }} Events{% endfilter %}
+{% for event in group.list %}
+{{ forloop.counter }}) {% include "../shared/out_text_item.tmpl" %}{% if not forloop.last %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+---
+
+AACO (Asian-Americans for Community Outreach) <www.aaco-sf.org>
+To request additions, deletions, or corrections to the AACO
+email list, please email your request to: info@aaco-sf.org
+If you no longer have access to email, drop a note to AACO at:
+PO BOX 61384, Sunnyvale, CA 94088-1384
+
+Please Note: This email was sent from a notification-only address.
+Please do not reply to this message.

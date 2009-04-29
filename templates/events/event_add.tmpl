@@ -1,0 +1,196 @@
+{% extends "base.tmpl" %}
+
+{% block title %}{{ application_name }}: Add or Edit Event{% endblock %}
+
+{% block head %}
+<link type="text/css" href="/static/css/jquery-ui.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/jquery-clockpick.css" rel="stylesheet" />
+<script src="/static/javascript/jquery-ui.js" type="text/javascript"></script>
+<script src="/static/javascript/jquery-clockpick.js" type="text/javascript"></script>
+
+<style>
+tr {
+  padding-top: 50px;
+  vertical-align: top;
+}
+
+td {
+  vertical-align: top;
+}
+
+#required {
+  color: red;
+}
+</style>
+
+<script type="text/javascript">
+  function dates_setup() {
+    $("#dates > div[id^=date] > input[name=begin_date]").datepicker();
+    $("#dates > div[id^=date] > input[name=end_date]").datepicker();
+
+    // sync begin/end dates
+    $('#dates > div > input[name=begin_date]').each(function(i) {
+      this.end_elem = $("#end_date" + this.id.slice(this.name.length));
+      $(this).change(function() {
+        if (this.end_elem.datepicker('getDate') < $(this).datepicker('getDate')) {
+          this.end_elem.datepicker('setDate', $(this).datepicker('getDate'));
+        }
+      });
+    });
+
+    $("#dates > div[id^=date] > input[name=begin_time]").clockpick({endhour: 23});
+    $("#dates > div[id^=date] > input[name=end_time]").clockpick({endhour: 23});
+
+    // delete links
+    $("#dates > div > a[id^=del]").click(function() {
+      $("#dates > div[id=date" + this.id.slice(3) + "]").remove();
+    });
+  };
+
+  $(document).ready(function() {
+    dates_setup();
+
+    // new link
+    $("#dates > div > a[id=add]").click(function() {
+      var last_elem = $("#dates > div[id^=date] > input[id^=end_time]:last");
+      var next_num = parseInt(last_elem.attr("id").slice(8)) + 1;
+
+      var date_html = [
+        "<div id='date", next_num ,"'>",
+        "<input type='text' id='begin_date", next_num,
+            "' name='begin_date' size='10' value=''/> ",
+        "<input type='text' id='begin_time", next_num,
+            "' name='begin_time' size='8' value=''/> to ",
+        "<input type='text' id='end_date", next_num,
+            "' name='end_date' size='10' value=''/> ",
+        "<input type='text' id='end_time", next_num,
+            "' name='end_time' size='8' value=''/> ",
+        "<a style='text-decoration: none;' id='del", next_num, "' href='#'>-</a>",
+        "</div>"
+      ].join('');
+      $("#dates > div[id^=date]:last").after(date_html);
+
+      dates_setup();
+    });
+
+  });
+</script>
+{% endblock head %}
+
+{% block body %}
+<div>
+  <form method="POST" action="{% if event %}/events/edit{% else %}/events/add{% endif %}">
+    {% if event %}
+    <input type="hidden" name="edit" value="{{ event.key }}"/>
+    {% endif %}
+    <table border="0">
+      <tr>
+        <th>type</th>
+        <td>
+          <select name="type">
+          {% for event_type in EVENT_TYPES %}
+            <option value="{{ event_type.0 }}"{% ifequal event.type event_type.0 %}SELECTED{% endifequal %}>{{ event_type.1 }}</option>
+          {% endfor %}
+          </select>
+          <br/><input type="checkbox" name="is_full"
+              {% if event.flag_is_full %}CHECKED{% endif %}/>is full
+          <br/><input type="checkbox" name="is_draft"
+              {% if not event or event.flag_is_draft %}CHECKED{% endif %}/>is draft
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <th>title</th>
+        <td>
+          <input type="text" name="title" size="32" value="{{ event.title }}"/>
+        </td>
+        <td><span id="required">*</span></td>
+      </tr>
+      <tr>
+        <th>time</th>
+        <td id="dates">
+          {% if event %}
+          {% for time in event.times %}
+          <div id="date{{ forloop.counter0 }}">
+            <input type="text" id="begin_date{{ forloop.counter0 }}"
+                name="begin_date" size="10" value="{{ time.start|input_date }}"/>
+            <input type="text" id="begin_time{{ forloop.counter0 }}"
+                name="begin_time" size="8" value="{{ time.start|input_time }}"/>
+            to
+            <input type="text" id="end_date{{ forloop.counter0 }}"
+                name="end_date" size="10" value="{{ time.end|input_date }}"/>
+            <input type="text" id="end_time{{ forloop.counter0 }}"
+                name="end_time" size="8" value="{{ time.end|input_time }}"/>
+            <a style="text-decoration: none;" id="del{{ forloop.counter0 }}" href="#">-</a>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div id="date0">
+            <input type="text" id="begin_date0" name="begin_date" size="10" value=""/>
+            <input type="text" id="begin_time0" name="begin_time" size="8" value=""/>
+            to
+            <input type="text" id="end_date0" name="end_date" size="10" value=""/>
+            <input type="text" id="end_time0" name="end_time" size="8" value=""/>
+            <a style="text-decoration: none;" id="del0" href="#">-</a>
+          </div>
+          {% endif %}
+          <div>
+            <a id="add" href="#">add</a>
+          </div>
+        </td>
+        <td><span id="required">*</span></td>
+      </tr>
+      <tr>
+        <th>location</th>
+        <td>
+          <textarea rows="3" cols="50" id="" name="location">{{ event.location }}</textarea>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <th>contact</th>
+        <td>
+          <textarea rows="3" cols="50" id="" name="contact">{{ event.contact }}</textarea>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <th>description</th>
+        <td><textarea rows="10" cols="50" id="" name="description">{{ event.description }}</textarea></td>
+        <td><span id="required">*</span></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span style="color: red;">* required</span></td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><input type="submit" value="{% if event %}update{% else %}create{% endif %}"/></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </form>
+</div>
+{% if event %}
+<div>
+  <h2>Preview</h2>
+  <hr/>
+  <div style="border: solid;">
+    {% include "../shared/out_html_css.tmpl" %}
+    {% include "../shared/out_html_item.tmpl" %}
+  </div>
+
+  <div>
+    <textarea rows="15" cols="100%" style="font-family: courier new;">
+{% include "../shared/out_text_item.tmpl" %}
+    </textarea>
+  </div>
+</div>
+{% endif %}
+{% endblock body %}

@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>AACO News: {% now "F d" %}</title>
+    {% include "../shared/out_html_css.tmpl" %}
+  </head>
+  <body>
+    <div>
+      <div>
+        {% regroup events by type_text as grouped %}
+        {% for group in grouped %}
+        <h2>{{ group.grouper }} Events</h2>
+        <ol class="event">
+        {% for event in group.list %}
+        {% include "../shared/out_html_item.tmpl" %}
+        {% endfor %}
+        </ol>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

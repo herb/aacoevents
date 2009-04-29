@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>{% block title %}{{ application_name }}{% endblock title %}</title>
+    <link href="/static/css/base.css" rel="stylesheet" type="text/css"/>
+		<script src="/static/javascript/jquery.js" type="text/javascript"></script>
+    {% block head %}{% endblock head %}
+  </head>
+  <body {% block bodyattributes %}{% endblock bodyattributes %}>
+    <div>
+      {% block header %}
+      <div id="header">
+        <div class="login">
+          {% if user %}
+            <span class="item nickname">{{ user.nickname }}</span> |
+            <span class="item"><a href="{{ logout_url|escape }}">Sign out</a></span>
+          {% else %}
+            <span class="item"><a href="{{ login_url|escape }}">Sign in</a></span>
+          {% endif %}
+        </div>
+        <div class="title"><h2>Asian Americans for Community Outreach</h2></div>
+        <div id="menu">{# note code copied and repeated in footer #}
+          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_user_admin %} <a href="/events/out">publish</a>{% endif %}
+        </div>
+        <hr/>
+      </div>
+      {% endblock header %}
+      {% if messages %}
+      <div id="messages">
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% if errors %}
+      <div id="errors">
+        <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      <div id="body">{% block body %}{% endblock body %}</div>
+      <div id="footer">
+        {% block footer %}
+        <hr/>
+        <div id="menu">
+          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_user_admin %} <a href="/events/out">publish</a>{% endif %}
+        </div>
+        {% endblock footer %}
+      </div>
+    </div>
+  </body>
+</html>
