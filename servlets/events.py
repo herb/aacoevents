@@ -188,10 +188,18 @@ class EventOutPage(base.BaseRequestHandler):
     out_text = string.strip(base.render_tmpl('events/out_text_email.tmpl',
         tmpl_display))
 
-    if not self.request.get('preview'):
+    if self.request.get('send_email') or self.request.get('update_gcal') \
+        or self.request.get('update_website'):
 
       db_event.clear_all_published()
       db_event.set_multiple_published(self.request.get_all('key'))
+
+      db_log.log_action(db_log.ACTION_PUBLISH, users.get_current_user(),
+          str(self.request.get_all('key')))
+
+      self.messages.append("events updated to website")
+
+    if self.request.get('send_email'):
 
       subject = "AACO News: %s" % datetime.datetime.now().strftime("%m/%d/%Y")
       mail.send_mail(
@@ -199,14 +207,17 @@ class EventOutPage(base.BaseRequestHandler):
         #subject=subject, body=out_text, html=out_html)
         subject=subject, body=out_text)
 
-      db_log.log_action(db_log.ACTION_PUBLISH, users.get_current_user(),
-          str(self.request.get_all('key')))
+      self.messages.append("email prepared and sent for approval.")
+
+    if self.request.get('update_gcal'):
 
       gcal.update_events(itertools.imap(
-          lambda e: (e, base.render_tmpl('shared/out_text_item.tmpl', {'event': e})),
-              db_event.get_events(self.request.get_all('key'))))
+          lambda e: (e,
+              base.render_tmpl('shared/out_text_item.tmpl', {'event': e})),
+            db_event.get_events(self.request.get_all('key'))))
 
-      self.messages.append("done. sent for approval.")
+      self.messages.append("google calendar updated.")
+
 
     self.display['events'] = events
     self.generate('events/event_out_preview.tmpl')
