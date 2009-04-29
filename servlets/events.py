@@ -5,7 +5,6 @@ __author__ = 'Herbert Ho'
 import datetime
 import itertools
 import logging
-import os
 import random
 import string
 import sys
@@ -20,12 +19,10 @@ from google.appengine.ext.webapp.util import login_required
 
 from db import db_event
 from db import db_log
+from servlets import base
 from util import gcal
 from util import tz
 
-
-# Set to true if we want to have our webapp print stack traces, etc
-_DEBUG = True
 
 # Add our custom Django template filters to the built in filters
 template.register_template_library('filters')
@@ -44,48 +41,13 @@ def _parse_datetimes(request, prefix):
       request.get_all(prefix+'time'))
   return map(_make_dt, aggr_itr)
 
-def _render_tmpl(template_name, values):
-  directory = os.path.dirname(__file__)
-  path = os.path.join(directory, os.path.join('templates', template_name))
-
-  return template.render(path, values, debug=_DEBUG)
 
 #
 # pages
 #
 
-class BaseRequestHandler(webapp.RequestHandler):
-  """Supplies a common template generation function.
 
-  When you call generate(), we augment the template variables supplied with
-  the current user in the 'user' variable and the current webapp request
-  in the 'request' variable.
-  """
-
-  def __init__(self):
-    self.messages = []
-    self.errors = []
-    self.display = {}
-
-
-  def generate(self, template_name, template_values={}):
-    values = {
-      'request': self.request,
-      'user': users.get_current_user(),
-      'is_user_admin': users.is_current_user_admin(),
-      'login_url': users.CreateLoginURL(self.request.uri),
-      'logout_url': users.CreateLogoutURL('http://' + self.request.host + '/'),
-      'messages': self.messages,
-      'errors': self.errors,
-      'debug': self.request.get('deb'),
-      'application_name': 'Event Manager',
-    }
-
-    values.update(self.display)
-    values.update(template_values)
-    self.response.out.write(_render_tmpl(template_name, values))
-
-class EventIndexPage(BaseRequestHandler):
+class EventIndexPage(base.BaseRequestHandler):
   def get(self):
     self.generate("events/index.tmpl", {})
 
@@ -94,7 +56,7 @@ class EventIndexPage(BaseRequestHandler):
 
 ONE_MONTH_DELTA = datetime.timedelta(31)
 TWO_MONTH_DELTA = datetime.timedelta(61)
-class EventListPage(BaseRequestHandler):
+class EventListPage(base.BaseRequestHandler):
   def _list(self):
     events = db_event.get_active_events_by_end_date(datetime.datetime.today())
 
@@ -118,7 +80,7 @@ class EventListPage(BaseRequestHandler):
 
     self._list()
 
-class EventAddPage(BaseRequestHandler):
+class EventAddPage(base.BaseRequestHandler):
 
   def get(self):
     self.generate('events/event_add.tmpl', {'EVENT_TYPES': db_event.EVENT_TYPES})
@@ -149,7 +111,7 @@ class EventAddPage(BaseRequestHandler):
 
     self.generate('events/event_add.tmpl', values)
 
-class EventEditPage(BaseRequestHandler):
+class EventEditPage(base.BaseRequestHandler):
   def get(self):
     event = db_event.get_event(self.request.get('key'))
     self.display['event'] = event
@@ -190,7 +152,7 @@ class EventEditPage(BaseRequestHandler):
 PUBLISH_WHITELIST = set([
     'joe@aaco-sf.org',
 ])
-class EventOutPage(BaseRequestHandler):
+class EventOutPage(base.BaseRequestHandler):
   def get(self):
     if not users.is_current_user_admin() \
         or users.get_current_user().email() in PUBLISH_WHITELIST:
@@ -222,8 +184,8 @@ class EventOutPage(BaseRequestHandler):
 
     events = db_event.get_publishable_events(self.request.get_all('key'))
     tmpl_display = { 'events': events }
-    out_html = _render_tmpl('events/out_html_email.tmpl', tmpl_display)
-    out_text = string.strip(_render_tmpl('events/out_text_email.tmpl',
+    out_html = base.render_tmpl('events/out_html_email.tmpl', tmpl_display)
+    out_text = string.strip(base.render_tmpl('events/out_text_email.tmpl',
         tmpl_display))
 
     if not self.request.get('preview'):
@@ -241,21 +203,13 @@ class EventOutPage(BaseRequestHandler):
           str(self.request.get_all('key')))
 
       gcal.update_events(itertools.imap(
-          lambda e: (e, _render_tmpl('shared/out_text_item.tmpl', {'event': e})),
+          lambda e: (e, base.render_tmpl('shared/out_text_item.tmpl', {'event': e})),
               db_event.get_events(self.request.get_all('key'))))
 
       self.messages.append("done. sent for approval.")
 
     self.display['events'] = events
     self.generate('events/event_out_preview.tmpl')
-
-class EventPublishedPage(BaseRequestHandler):
-  def get(self):
-    self.display['events'] = filter(
-        lambda e: e.type == db_event.EVENT_TYPE_VOLUNTEER,
-        db_event.get_published_events())
-
-    self.generate('webpage/upcoming.tmpl')
 
 def main():
   try:
@@ -265,8 +219,7 @@ def main():
       ('/events/add', EventAddPage),
       ('/events/edit', EventEditPage),
       ('/events/out', EventOutPage),
-      ('/published', EventPublishedPage),
-    ], debug=_DEBUG)
+    ], debug=base._DEBUG)
     wsgiref.handlers.CGIHandler().run(application)
 
   except Exception, e:
@@ -275,5 +228,4 @@ def main():
 
 
 if __name__ == '__main__':
-  logging.debug("loading...")
   main()

@@ -16,8 +16,11 @@ handlers:
   login: admin
 
 - url: /events/.*
-  script: events.py
+  script: servlets/events.py
   login: required
 
+- url: /s/.*
+  script: servlets/website.py
+
 - url: /published
-  script: events.py
+  script: servlets/events.py
