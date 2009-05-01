@@ -46,8 +46,23 @@ def _parse_datetimes(request, prefix):
 # pages
 #
 
+SUPERUSER_WHITELIST = set([
+    'joe@aaco-sf.org',
+])
+class BaseEventRequestHandler(base.BaseRequestHandler):
+  def __init__(self):
+    self.user_is_superuser = users.is_current_user_admin() or (
+        users.get_current_user().email() in SUPERUSER_WHITELIST)
 
-class EventIndexPage(base.BaseRequestHandler):
+    super(BaseEventRequestHandler, self).__init__()
+
+  def generate(self, template_name, template_values={}):
+    self.display['is_superuser'] = self.user_is_superuser
+
+    super(BaseEventRequestHandler, self).generate(template_name, template_values)
+
+
+class EventIndexPage(BaseEventRequestHandler):
   def get(self):
     self.generate("events/index.tmpl", {})
 
@@ -56,7 +71,7 @@ class EventIndexPage(base.BaseRequestHandler):
 
 ONE_MONTH_DELTA = datetime.timedelta(31)
 TWO_MONTH_DELTA = datetime.timedelta(61)
-class EventListPage(base.BaseRequestHandler):
+class EventListPage(BaseEventRequestHandler):
   def _list(self):
     events = db_event.get_active_events_by_end_date(datetime.datetime.today())
 
@@ -80,7 +95,7 @@ class EventListPage(base.BaseRequestHandler):
 
     self._list()
 
-class EventAddPage(base.BaseRequestHandler):
+class EventAddPage(BaseEventRequestHandler):
 
   def get(self):
     self.generate('events/event_add.tmpl', {'EVENT_TYPES': db_event.EVENT_TYPES})
@@ -110,7 +125,7 @@ class EventAddPage(base.BaseRequestHandler):
 
     self.generate('events/event_add.tmpl', values)
 
-class EventEditPage(base.BaseRequestHandler):
+class EventEditPage(BaseEventRequestHandler):
   def get(self):
     event = db_event.get_event(self.request.get('key'))
     self.display['event'] = event
@@ -148,13 +163,9 @@ class EventEditPage(base.BaseRequestHandler):
 
     self.generate('events/event_add.tmpl')
 
-PUBLISH_WHITELIST = set([
-    'joe@aaco-sf.org',
-])
-class EventOutPage(base.BaseRequestHandler):
+class EventOutPage(BaseEventRequestHandler):
   def get(self):
-    if not users.is_current_user_admin() \
-        or users.get_current_user().email() in PUBLISH_WHITELIST:
+    if not self.user_is_superuser:
       self.errors.append("operation not allowed")
       self.generate("events/index.tmpl", {})
       return
@@ -175,8 +186,7 @@ class EventOutPage(base.BaseRequestHandler):
       else:
         return cmp(x.type, y.type)
 
-    if not users.is_current_user_admin() \
-        or users.get_current_user().email() in PUBLISH_WHITELIST:
+    if not self.user_is_superuser:
       self.errors.append("operation not allowed")
       self.generate("events/index.tmpl", {})
       return

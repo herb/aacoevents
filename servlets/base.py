@@ -21,12 +21,15 @@ class BaseRequestHandler(webapp.RequestHandler):
     self.errors = []
     self.display = {}
 
+    self.start()
+
+  def start(self):
+    pass
 
   def generate(self, template_name, template_values={}):
     values = {
       'request': self.request,
       'user': users.get_current_user(),
-      'is_user_admin': users.is_current_user_admin(),
       'login_url': users.CreateLoginURL(self.request.uri),
       'logout_url': users.CreateLogoutURL('http://' + self.request.host + '/'),
       'messages': self.messages,
