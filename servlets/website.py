@@ -16,6 +16,7 @@ class UpcomingPage(base.BaseRequestHandler):
         lambda e: e.type == db_event.EVENT_TYPE_VOLUNTEER,
         db_event.get_published_events())
 
+    self.display['page_title'] = 'Upcoming Events'
     self.generate('website/upcoming.tmpl')
 
 class CommunityPage(base.BaseRequestHandler):
@@ -24,13 +25,20 @@ class CommunityPage(base.BaseRequestHandler):
         lambda e: e.type == db_event.EVENT_TYPE_COMMUNITY,
         db_event.get_published_events())
 
+    self.display['page_title'] = 'Community Events'
     self.generate('website/community.tmpl')
+
+class MissionPage(base.BaseRequestHandler):
+  def get(self):
+    self.display['page_title'] = 'About Us'
+    self.generate('website/about.tmpl')
 
 def main():
   try:
     application = webapp.WSGIApplication([
       ('/s/upcoming.html', UpcomingPage),
       ('/s/community.html', CommunityPage),
+      ('/s/about.html', MissionPage),
     ], debug=base._DEBUG)
     wsgiref.handlers.CGIHandler().run(application)
 

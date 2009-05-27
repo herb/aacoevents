@@ -4,12 +4,70 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>{% block title %}{{ page_title }}{% endblock title %}</title>
     <script src="/static/javascript/jquery.js" type="text/javascript"></script>
+    <script src="/static/javascript/jquery.corners.js" type="text/javascript">
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('li[class=event]').corners();
+        $('div[id=sidebar-nav-div]').corners();
+        $('div[id=sidebar-image-div]').corners();
+        $('div[id=sidebar-syndication-div]').corners();
+        $('div[id=main-content-header-div]').corners();
+      });
+    </script>
     {% block head %}{% endblock head %}
     {% include "_analytics.tmpl" %}
+    {% include "css.tmpl" %}
   </head>
   <body {% block bodyattributes %}{% endblock bodyattributes %}>
     <div id="base-div">
-    {% block main_content %}{% endblock main_content %}
+      <div id="mast-div">
+        <img id="mast-image" src="/static/images/logo_red_120.gif"/>
+        <h1 id="mast-title">{{ page_title }}</h1>
+      </div>
+      <div id="sidebar-div">
+        <div id="sidebar-nav-div">
+          <ul id="sidebar-list">
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/">home</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/mission.htm">our mission</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/upcoming.html">upcoming events</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/past.shtml">past events</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/staff.htm">staff</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/feedback.htm">join us</a>
+            </li>
+            <li id="sidebar-item">
+              <a class="sidebar-links" href="/links.htm">links</a>
+            </li>
+          </ul>
+        </div>
+        <div style="clear: left;"></div>
+        <div id="sidebar-syndication-div">
+          <a style="position: relative; top: 06px;" href="http://www.google.com/calendar/ical/aacosf%40aaco-sf.org/public/basic.ics"><img src="/static/images/cal-ical.gif"/></a>
+          <a style="position: relative; top: 06px;" href="http://www.google.com/calendar/hosted/aaco-sf.org/embed?src=aacosf%40aaco-sf.org&ctz=America/Los_Angeles"><img src="/static/images/cal-html.gif"/></a>
+        </div>
+
+        <div style="clear: left;"></div>
+        <div id="sidebar-image-div">
+            <embed type="application/x-shockwave-flash" src="http://picasaweb.google.com/s/c/bin/slideshow.swf" width="144" height="96" flashvars="host=picasaweb.google.com&RGB=0x000000&feed=http%3A%2F%2Fpicasaweb.google.com%2Fdata%2Ffeed%2Fapi%2Fuser%2Fherbert.ho%2Falbumid%2F5175057527585806625%3Fkind%3Dphoto%26alt%3Drss%26authkey%3DGv1sRgCNGm6YXFu9fjtAE" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed>
+            <br/>
+            Feb 24th -- Street Meals
+        </div>
+      </div>
+      <div id="main-content-div">
+      {% block main_content %}{% endblock main_content %}
+      </div>
     </div>
   </body>
 </html>
