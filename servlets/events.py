@@ -71,6 +71,7 @@ class EventIndexPage(BaseEventRequestHandler):
 
 ONE_MONTH_DELTA = datetime.timedelta(31)
 TWO_MONTH_DELTA = datetime.timedelta(61)
+THREE_MONTH_DELTA = datetime.timedelta(91)
 class EventListPage(BaseEventRequestHandler):
   def _list(self):
     events = db_event.get_active_events_by_end_date(datetime.datetime.today())
@@ -171,7 +172,7 @@ class EventOutPage(BaseEventRequestHandler):
       return
 
     events = db_event.get_active_events_by_end_date(datetime.datetime.today(),
-        TWO_MONTH_DELTA)
+        THREE_MONTH_DELTA)
     events = filter(lambda e: not e.flag_is_draft, events)
 
     self.generate('events/event_out.tmpl', {
