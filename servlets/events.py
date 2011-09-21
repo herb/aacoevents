@@ -5,16 +5,13 @@ __author__ = 'Herbert Ho'
 import datetime
 import itertools
 import logging
-import random
-import string
-import sys
 import time
 import wsgiref.handlers
 
 from google.appengine.api import mail
 from google.appengine.api import users
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
+from google.appengine.ext.webapp import template, WSGIApplication
 from google.appengine.ext.webapp.util import login_required
 
 from db import db_event
@@ -47,7 +44,11 @@ def _parse_datetimes(request, prefix):
 #
 
 SUPERUSER_WHITELIST = set([
+    'aileen@aaco-sf.org',
+    'derek@aaco-sf.org',
+    'derekl@aaco-sf.org',
     'joe@aaco-sf.org',
+    'herbert@aaco-sf.org',
 ])
 class BaseEventRequestHandler(base.BaseRequestHandler):
   def __init__(self):
@@ -196,8 +197,8 @@ class EventOutPage(BaseEventRequestHandler):
         cmp=_cmp_events)
     tmpl_display = { 'events': events }
     out_html = base.render_tmpl('events/out_html_email.tmpl', tmpl_display)
-    out_text = string.strip(base.render_tmpl('events/out_text_email.tmpl',
-        tmpl_display))
+    out_text = base.render_tmpl('events/out_text_email.tmpl', tmpl_display
+        ).strip()
 
     if self.request.get('send_email') or self.request.get('update_gcal') \
         or self.request.get('update_website'):
