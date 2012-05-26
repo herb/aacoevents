@@ -18,7 +18,7 @@
 
 {% block body %}
   {% if events %}
-	<table border="0">
+  <table border="0">
     <tr>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
@@ -29,19 +29,27 @@
       <th>contact</th>
       <th>creator</th>
     </tr>
-	{% for event in events %}
+  {% for event in events %}
     <tr>
       <td>
+        {% if is_archive %}
+        <a href="/events/view?key={{ event.key }}">view</a>
+        {% else %}
         <form id="delete_{{ event.key }}" method="POST">
           <input type="hidden" name="delete" value="{{ event.key }}"/>
           <input type="submit" value="delete"/>
         </form>
+        {% endif %}
       </td>
       <td>
+        {% if is_archive %}
+        &nbsp;
+        {% else %}
         <form id="edit_{{ event.key }}" method="GET" action="/events/edit">
           <input type="hidden" name="key" value="{{ event.key }}"/>
           <input type="submit" value="edit"/>
         </form>
+        {% endif %}
       </td>
       <td style="width: 260px;">
         {% for time in event.times %}
@@ -53,7 +61,7 @@
       <td>{{ event.contact }}</td>
       <td>{{ event.creator.nickname }}</td>
     </tr>
-	{% endfor %}
+  {% endfor %}
   </table>
   {% else %}
   no events

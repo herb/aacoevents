@@ -21,7 +21,7 @@
         </div>
         <div class="title"><h2>Asian Americans for Community Outreach</h2></div>
         <div id="menu">{# note code copied and repeated in footer #}
-          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_superuser %} <a href="/events/out">publish</a>{% endif %}
+          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_superuser %} <a href="/events/out">publish</a> <a href="/events/list?archive=1">archive</a>{% endif %}
         </div>
         <hr/>
       </div>
@@ -49,7 +49,7 @@
         {% block footer %}
         <hr/>
         <div id="menu">
-          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_superuser %} <a href="/events/out">publish</a>{% endif %}
+          <a href="/events/">home</a> | <a href="/events/list">list</a> <a href="/events/add">add</a>{% if is_superuser %} <a href="/events/out">publish</a> <a href="/events/list?archive=1">archive</a>{% endif %}
         </div>
         {% endblock footer %}
       </div>

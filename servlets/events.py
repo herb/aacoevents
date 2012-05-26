@@ -74,16 +74,24 @@ ONE_MONTH_DELTA = datetime.timedelta(31)
 TWO_MONTH_DELTA = datetime.timedelta(61)
 THREE_MONTH_DELTA = datetime.timedelta(91)
 class EventListPage(BaseEventRequestHandler):
-  def _list(self):
-    events = db_event.get_active_events_by_end_date(datetime.datetime.today())
+  def _list(self, events, is_archive):
 
     self.generate('events/event_list.tmpl', {
       'events': events,
+      'is_archive': is_archive,
       'debug_info': str(events),
     })
 
   def get(self):
-    self._list()
+    today = datetime.datetime.today()
+    if self.request.get('archive'):
+      is_archive = True
+      events = db_event.get_old_events_by_end_date(today)
+    else:
+      is_archive = False
+      events = db_event.get_active_events_by_end_date(today)
+
+    self._list(events, is_archive)
 
   def post(self):
     if self.request.get('delete'):
@@ -234,6 +242,20 @@ class EventOutPage(BaseEventRequestHandler):
     self.display['events'] = events
     self.generate('events/event_out_preview.tmpl')
 
+class EventViewPage(BaseEventRequestHandler):
+  def get(self):
+    event = db_event.get_event(self.request.get('key'))
+
+    tmpl_display = { 'events': [event] }
+    out_html = base.render_tmpl('events/out_html_email.tmpl', tmpl_display)
+    out_text = base.render_tmpl('events/out_text_email.tmpl', tmpl_display
+        ).strip()
+
+    self.display['out_html'] = out_html
+    self.display['out_text'] = out_text
+
+    self.generate('events/event_view.tmpl')
+
 def main():
   try:
     application = webapp.WSGIApplication([
@@ -242,6 +264,7 @@ def main():
       ('/events/add', EventAddPage),
       ('/events/edit', EventEditPage),
       ('/events/out', EventOutPage),
+      ('/events/view', EventViewPage),
     ], debug=base._DEBUG)
     wsgiref.handlers.CGIHandler().run(application)
 

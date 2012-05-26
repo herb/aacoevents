@@ -1,0 +1,31 @@
+{% extends "base.tmpl" %}
+
+{% block title %}{{ application_name }}: Event Previewing{% endblock %}
+
+{% block head %}
+  <style>
+    th {
+      text-align: left;
+      padding: 1px 5px 1px 5px;
+    }
+    td {
+      padding: 1px 5px 1px 5px;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<h2>html</h2>
+<div style="border: solid;">
+{{ out_html }}
+</div>
+
+<br/>
+
+<h2>text</h2>
+<div>
+  <textarea rows="15" cols="100%" style="font-family: courier new;">
+  {{ out_text }}
+  </textarea>
+</div>
+{% endblock %}

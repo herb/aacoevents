@@ -158,6 +158,11 @@ def get_active_events_by_end_date(end, delta=None):
 
   return itertools.imap(lambda x: EventVO(x), current_active)
 
+def get_old_events_by_end_date(end):
+  raw_events = db.Query(Event).filter('ends <', end).order('-ends')
+
+  return itertools.imap(lambda x: EventVO(x), raw_events)
+
 def set_multiple_published(keys):
   for key in keys:
     event = db.get(key)
