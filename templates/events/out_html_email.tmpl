@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>AACO News: {% now "F d" %}</title>
-    {% include "../shared/out_html_css.tmpl" %}
+    {% include "out_html_css.tmpl" %}
   </head>
   <body>
     <div>
@@ -11,7 +11,7 @@
         <h2>{{ group.grouper }} Events</h2>
         <ol class="event">
         {% for event in group.list %}
-          <li class="event">{% include "../shared/out_html_item.tmpl" %}</li>
+          <li class="event">{% include "out_html_item.tmpl" %}</li>
         {% endfor %}
         </ol>
         {% endfor %}

@@ -1,0 +1,11 @@
+{% if event.flag_is_full %}( RSVP FULL ) {% endif %}{{ event.title }}
+
+    when:       {% filter indenttext:16 %}{% for time in event.times %}{% spaceless %}{% if time.is_same_day %}{{ time.start|pretty_date }}   {{ time.start|pretty_time }} - {{  time.end|pretty_time }}{% else %}{{ time.start|pretty_datetime }} - {{  time.end|pretty_datetime }}{% endif %}{% endspaceless %}
+{% endfor %}{% endfilter %}{% if event.location %}
+
+    where:      {{ event.location|striptags|wordwrap:40|indenttext:16 }}{% endif %}{% if event.contact %}
+
+    contact:    {{ event.contact|striptags|wordwrap:40|indenttext:16 }}{% endif %}
+
+
+                {{ event.description|striptags|wordwrap:40|indenttext:16 }}

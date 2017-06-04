@@ -3,7 +3,6 @@
 __author__ = 'Herbert Ho'
 
 import datetime
-import itertools
 import logging
 import time
 import wsgiref.handlers
@@ -22,7 +21,7 @@ from util import tz
 
 
 # Add our custom Django template filters to the built in filters
-template.register_template_library('filters')
+template.register_template_library('util.filters')
 
 
 #
@@ -34,7 +33,7 @@ def _parse_datetimes(request, prefix):
   _make_dt = lambda (x,y): datetime.datetime(tzinfo=tz.us_pacific,
       *time.strptime("%s %s" % (x,y), DATETIME_FORMAT)[0:6])
 
-  aggr_itr = itertools.izip(request.get_all(prefix+'date'),
+  aggr_itr = zip(request.get_all(prefix+'date'),
       request.get_all(prefix+'time'))
   return map(_make_dt, aggr_itr)
 
@@ -51,11 +50,11 @@ SUPERUSER_WHITELIST = set([
     'herbert@aaco-sf.org',
 ])
 class BaseEventRequestHandler(base.BaseRequestHandler):
-  def __init__(self):
+  def __init__(self, request, response):
     self.user_is_superuser = users.is_current_user_admin() or (
         users.get_current_user().email() in SUPERUSER_WHITELIST)
 
-    super(BaseEventRequestHandler, self).__init__()
+    super(BaseEventRequestHandler, self).__init__(request, response)
 
   def generate(self, template_name, template_values={}):
     self.display['is_superuser'] = self.user_is_superuser
@@ -231,8 +230,7 @@ class EventOutPage(BaseEventRequestHandler):
 
     if self.request.get('update_gcal'):
 
-      gcal.update_events(itertools.imap(
-          lambda e: (e,
+      gcal.update_events(map(lambda e: (e,
               base.render_tmpl('shared/out_text_item.tmpl', {'event': e})),
             db_event.get_events(self.request.get_all('key'))))
 

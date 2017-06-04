@@ -8,7 +8,7 @@
 {% for group in grouped %}
 {% filter postpadding:60 %}{{ group.grouper }} Events{% endfilter %}
 {% for event in group.list %}
-{{ forloop.counter }}) {% include "../shared/out_text_item.tmpl" %}{% if not forloop.last %}
+{{ forloop.counter }}) {% include "out_text_item.tmpl" %}{% if not forloop.last %}
 {% endif %}
 {% endfor %}
 {% endfor %}

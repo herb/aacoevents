@@ -75,8 +75,8 @@ EVENT_TYPES_DICT = dict(EVENT_TYPES)
 class EventVO(object):
   def __init__(self, model):
     self.times = sorted(
-        [TimeVO(s, e) for s,e in itertools.izip(model.starts, model.ends)],
-        reverse=True)
+        [TimeVO(s, e) for s,e in zip(model.starts, model.ends)], reverse=True)
+
     for name, value in model.properties().iteritems():
       setattr(self, name, getattr(model, name))
 
@@ -118,12 +118,13 @@ def _filter_event_dates(event):
 def update_event(**kwargs):
   event = db.get(kwargs['key'])
 
-  for key,value in itertools.ifilter(lambda k: k[0] != 'key', kwargs.iteritems()):
+  for key,value in filter(lambda k: k[0] != 'key', kwargs.items()):
     setattr(event, key, value)
 
   db.put(event)
 
   return EventVO(event)
+
 
 def add_event(**kwargs):
   event = Event(**kwargs)
@@ -131,37 +132,42 @@ def add_event(**kwargs):
 
   return EventVO(event)
 
+
 def get_event(key):
   return EventVO(db.get(key))
 
+
 def get_events(keys):
-  return itertools.imap(lambda x: get_event(x), keys)
+  return map(lambda x: get_event(x), keys)
+
 
 def get_publishable_events(keys):
-  return filter(lambda e: not e.flag_is_draft,
-      itertools.imap(_filter_event_dates,
-        itertools.imap(lambda x: get_event(x), keys)))
+  return filter(lambda e: not e.flag_is_draft, map(_filter_event_dates,
+        map(lambda x: get_event(x), keys)))
+
 
 def get_published_events():
-  events = itertools.imap(lambda e: EventVO(e),
-      Event.all().filter('flag_is_published =', True))
-  return filter(lambda e: not e.flag_is_draft,
-      itertools.imap(_filter_event_dates, events))
+  events = map(lambda e: EventVO(e), Event.all().filter('flag_is_published =',
+          True))
+  return filter(lambda e: not e.flag_is_draft, map(_filter_event_dates, events))
+
 
 def get_active_events_by_end_date(end, delta=None):
   raw_events = db.Query(Event).filter('ends >', end)
 
-  current_active = itertools.ifilter(lambda e: e.flag_is_active, raw_events)
+  current_active = filter(lambda e: e.flag_is_active, raw_events)
   if delta:
-    current_active = itertools.ifilter(
-        lambda e: filter(lambda x: x <= end+delta, e.starts), current_active)
+    current_active = filter(lambda e: filter(
+            lambda x: x <= end+delta, e.starts), current_active)
 
-  return itertools.imap(lambda x: EventVO(x), current_active)
+  return map(lambda x: EventVO(x), current_active)
+
 
 def get_old_events_by_end_date(end):
   raw_events = db.Query(Event).filter('ends <', end).order('-ends')
 
-  return itertools.imap(lambda x: EventVO(x), raw_events)
+  return map(lambda x: EventVO(x), raw_events)
+
 
 def set_multiple_published(keys):
   for key in keys:
@@ -169,11 +175,13 @@ def set_multiple_published(keys):
     event.flag_is_published = True
     db.put(event)
 
+
 def clear_all_published():
   events = Event.all().filter('flag_is_published =', True)
   for event in events:
     event.flag_is_published = False
     db.put(event)
+
 
 def delete_event(encoded_key):
   event = db.get(encoded_key)

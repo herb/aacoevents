@@ -8,7 +8,7 @@ from servlets import base
 
 
 # Add our custom Django template filters to the built in filters
-template.register_template_library('filters')
+template.register_template_library('util.filters')
 
 class UpcomingPage(base.BaseRequestHandler):
   def get(self):

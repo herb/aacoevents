@@ -16,12 +16,12 @@ class BaseRequestHandler(webapp.RequestHandler):
   in the 'request' variable.
   """
 
-  def __init__(self):
+  def __init__(self, request, response):
+    super(BaseRequestHandler, self).__init__(request, response)
+
     self.messages = []
     self.errors = []
     self.display = {}
-
-    self.start()
 
   def start(self):
     pass
@@ -40,11 +40,15 @@ class BaseRequestHandler(webapp.RequestHandler):
 
     values.update(self.display)
     values.update(template_values)
-    self.response.out.write(render_tmpl(template_name, values))
+    #self.response.out.write(render_tmpl(template_name, values))
+    import logging; logging.warning('rendered: type(body)={}'.format(type(render_tmpl(template_name, values))))
+    self.response.write(str(render_tmpl(template_name, values)))
+
+    # TODO(herb): NEXT: figure out how relative template includes work
 
 
 def render_tmpl(template_name, values):
-  directory = ".."
-  path = os.path.join(directory, os.path.join('templates', template_name))
+  path = os.path.join(os.path.dirname(__file__), '..', 'templates', 
+          template_name)
 
   return template.render(path, values, debug=_DEBUG)
